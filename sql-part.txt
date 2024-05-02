@@ -1,0 +1,79 @@
+
+--All if this is taken from sp in Azure SQL database.
+-- I will just put here queries which I am not familiar with:
+
+
+1)[dbo].[sp_Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101]
+
+SET ANSI_NULLS ON
+GO
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- what those querries do?
+
+--wojtek
+--ansi nulls "ON" will make  comparing to null imposible 
+--WHERE column_name = NULL
+--WHERE column_name <> NULL 
+--will not match nulls
+--and <> will not match rows not equal to null
+-- with this option "ON" comparing against null is not possible
+--https://learn.microsoft.com/en-us/sql/t-sql/statements/set-ansi-nulls-transact-sql?view=sql-server-ver16
+
+
+--wojtek
+--quoted identifier on allows for use of reserved word object names
+--SET QUOTED_IDENTIFIER ON;
+--GO
+
+-- Create statement succeeds.
+--CREATE TABLE "select" ("identity" INT IDENTITY NOT NULL, "order" INT NOT NULL);
+--GO
+
+
+2) same
+
+CREATE procedure [dbo].[sp_Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101]
+as
+begin
+	set nocount on 
+
+
+-- set nocount on -- what does this indicates?
+--nocount on --dont count number of rows that the querry will return, just return rows- this will speed up the querry
+
+
+
+3) same
+
+	CREATE NONCLUSTERED INDEX [IX_Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101] ON [dbo].[Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101]
+	(
+		[Line] ASC,
+		[SequenceNumber] ASC,
+		[BackgroundSequenceNumber] ASC,
+		[TransactionType] ASC,
+		[Document] ASC,
+		[OriginalCompany] ASC
+		-- ,[FilePath] ASC
+
+	) WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY];
+
+-- -- Can this be explained?
+--create nonclustered index means index  will be stored in separate data structure outside table
+-- index name:IX_Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101
+--indexed table name: Landing_DataPlatform_LNGLData_114_prep01_ttfgld1061101
+(...columns names that will be used in index)
+-- data in rows of an index will be held in ascending order for columns which will speed up times for reading data from index, but increase time for adding new elements
+to the table, and to the index
+with()- options (modifiers) used for creting index:
+STATISTICS_NORECOMPUTE = OFF, --automatic statistics computing enabled for index
+DROP_EXISTING = OFF, --means that if index of the same name already exist it will not be modified, but the whole operation will fail
+ONLINE = OFF, --it means whether index can be updated while still being read, this means off so the index can be read, or modified , but not both at the same time
+OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF -- index will not be optimized for adding data to the index , for the sequential keys
+
+
+ON partition_scheme_name ( column_name )
+ON PRIMARY- index will be stored on primary partition, so no custom partitioning schem is createrd, so it will not affect performance 
